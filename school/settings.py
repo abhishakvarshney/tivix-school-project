@@ -71,14 +71,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'school.wsgi.application'
 
-
+MYSQL_HOSTNAME = os.getenv('MYSQL_HOSTNAME', 'localhost')
+MYSQL_DBNAME = os.getenv('MYSQL_DBNAME', 'platform_school')
+MYSQL_USER = os.getenv('MYSQL_USER', 'platform_admin')
+MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', 'pb_dev_env')
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django_prometheus.db.backends.mysql',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': MYSQL_DBNAME,
+        'USER': MYSQL_USER,
+        'PASSWORD': MYSQL_PASSWORD,
+        'HOST': MYSQL_HOSTNAME,
+        'COLLATION': 'utf8_general_ci',
+        'CHARSET': 'utf8',
     }
 }
 
