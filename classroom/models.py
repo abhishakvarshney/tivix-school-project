@@ -1,4 +1,5 @@
 import os
+import uuid
 from django.db import models
 from utility.log import log
 from utility.Exceptions import *

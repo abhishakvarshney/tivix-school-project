@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 import json
-import requests
+# import requests
 import re
 import sys
 import traceback
@@ -9,9 +9,9 @@ from Crypto.Cipher import AES
 import base64
 from utility.log import log
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+# from dateutil.relativedelta import relativedelta
 import uuid
-import dateutil.parser
+# import dateutil.parser
 import time
 import os
 

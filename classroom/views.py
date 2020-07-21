@@ -19,7 +19,6 @@ from utility.utils import GeneralUtils as GU
 @parser_classes([JSONParser, MultiPartParser, FormParser])
 def list_student(request):
     if request.method == 'GET':
-
         response_dict = models.Student.list_student()
         if response_dict is None:
             response_dict = {}
@@ -75,6 +74,27 @@ def update_student(request):
 
 @api_view(['POST'])
 @parser_classes([JSONParser, MultiPartParser, FormParser])
+def delete_student_account(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        if data.get('studentId', "") == "":
+            raise ArgumentMissingException("Missing studentId parameter")
+        response_dict = {}
+        try:
+            models.Student.delete_student(data.get('studentId', ""))
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Success"
+            response_dict["result"] = True
+        except Exception as ex:
+            log.exception(ex)
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Student Data not available"
+            response_dict["result"] = False
+        return response_dict
+
+
+@api_view(['POST'])
+@parser_classes([JSONParser, MultiPartParser, FormParser])
 def student_delete_teacher(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -110,6 +130,7 @@ def list_teacher(request):
         log.v('list teacher response = ' + str(response_dict))
         return Response(response_dict, status=201)
 
+
 @api_view(['POST'])
 @parser_classes([JSONParser, MultiPartParser, FormParser])
 def add_teacher(request):
@@ -129,7 +150,64 @@ def add_teacher(request):
 @api_view(['POST'])
 @parser_classes([JSONParser, MultiPartParser, FormParser])
 def update_teacher(request):
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        if data.get('teacherId', "") == "":
+            raise ArgumentMissingException("Missing teacherID parameter")
+
+        if data.get('firstName', "") == "" and data.get('lastName', "") == "" and data.get('gender', '') == '' and data.get('password', '') == '':
+            raise ArgumentMissingException("Missing Teacher data parameter")
+
+        teacher_id = models.Teacher.update_teacher(data)
+        if teacher_id is None:
+            response_dict = {}
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Teacher not Found"
+            response_dict["result"] = False
+            log.d('[updateTeacher]response = ' + str(response_dict))
+        else:
+            response_dict = {"teacherId": teacher_id, "status_code": 200, "result": True}
+            log.d('[updateTeacher]response = ' + str(response_dict))
+        return Response(response_dict, status=201)
+
 
 @api_view(['POST'])
 @parser_classes([JSONParser, MultiPartParser, FormParser])
-def delete_teacher(request):
+def delete_teacher_account(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        if data.get('teacherId', "") == "":
+            raise ArgumentMissingException("Missing teacherId parameter")
+        response_dict = {}
+        try:
+            models.Teacher.delete_teacher(data.get('teacherId', ""))
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Success"
+            response_dict["result"] = True
+        except Exception as ex:
+            log.exception(ex)
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Teacher Data not available"
+            response_dict["result"] = False
+        return response_dict
+
+
+@api_view(['POST'])
+@parser_classes([JSONParser, MultiPartParser, FormParser])
+def teacher_delete_student(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        if data.get('studentId', "") == "":
+            raise ArgumentMissingException("Missing studentId parameter")
+        response_dict = {}
+        try:
+            models.StudentTeacherMapping.delete_student(data.get('studnetId', ""))
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Success"
+            response_dict["result"] = True
+        except Exception as ex:
+            log.exception(ex)
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Student not linked with in Teacher Data"
+            response_dict["result"] = False
+        return response_dict
