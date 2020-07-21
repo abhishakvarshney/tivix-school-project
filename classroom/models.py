@@ -1,9 +1,13 @@
 import os
 import uuid
+import json
 from django.db import models
 from utility.log import log
 from utility.Exceptions import *
 from utility.utils import GeneralUtils as GU
+from django.http import JsonResponse
+from django.core import serializers
+
 
 # Create your models here.
 __all__ = ["Student", "Teacher", "StudentTeacherMapping"]
@@ -28,7 +32,7 @@ class Student(models.Model):
         """
         db_table = "student"
 
-    studentId = models.CharField(max_length=255, primary_key=True, editable=False)
+    studentId = models.CharField(max_length=255, primary_key=True)
     password = models.CharField(max_length=45, null=False, blank=False)
     firstname = models.TextField(null=True, blank=True)
     lastname = models.TextField(null=True, blank=True)
@@ -45,8 +49,17 @@ class Student(models.Model):
         """
         @return:
         """
-        response_dict = Student.objects.all()
-        return response_dict
+        response_dict = json.loads(serializers.serialize('json', Student.objects.all()))
+        student_data_list = []
+        print(response_dict)
+        for data in response_dict:
+                student_data = {}
+                student_data['studentId'] = data['fields']['studentId']
+                student_data['firstName'] = GU.decryptData(data['fields']['firstname'])
+                student_data['lastName'] = GU.decryptData(data['fields']['lastname'])
+                student_data['gender'] = data['fields']['gender']
+                student_data_list.append(student_data)
+        return student_data_list
 
     @staticmethod
     def add_student(data):
@@ -55,14 +68,17 @@ class Student(models.Model):
         @param data:
         @return:
         """
-        userData = {}
-        userData["firstname"] = GU.encrypt_data(data.get("firstName", ""))
-        userData["lastname"] = GU.encrypt_data(data.get("lastName", ""))
-        userData['password'] = GU.encrypt_data(data.get("password", ""))
-        userData["gender"] = data.get("gender", "")
-        userData["isActive"] = True
-        obj = Student.objects.create(userData)
-        return obj, True
+        user = Student()
+        user.studentId = data.get("studentId", "")
+        user.firstname = GU.encryptData(data.get("firstName", ""))
+        user.lastname = GU.encryptData(data.get("lastName", ""))
+        user.password = GU.encryptData(data.get("password", ""))
+        user.gender = data.get("gender", "")
+        user.isActive = True
+        if Student.check_student(data.get('studentId')) is None:
+            user.save()
+            return user, True
+        return user, False
 
     @staticmethod
     def check_student(student_id):
@@ -165,9 +181,9 @@ class Teacher(models.Model):
         @return:
         """
         userData = {}
-        userData["firstname"] = GU.encrypt_data(data.get("firstName", ""))
-        userData["lastname"] = GU.encrypt_data(data.get("lastName", ""))
-        userData['password'] = GU.encrypt_data(data.get("password", ""))
+        userData["firstname"] = GU.encryptData(data.get("firstName", ""))
+        userData["lastname"] = GU.encryptData(data.get("lastName", ""))
+        userData['password'] = GU.encryptData(data.get("password", ""))
         userData["gender"] = data.get("gender", "")
         userData["isActive"] = True
         obj = Teacher.objects.create(userData)

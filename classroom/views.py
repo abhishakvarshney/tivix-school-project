@@ -18,17 +18,44 @@ from utility.utils import GeneralUtils as GU
 @api_view(['GET'])
 @parser_classes([JSONParser, MultiPartParser, FormParser])
 def list_student(request):
+    """
+        list all students
+
+        #### url
+            http://localhost:8000/list/student/
+
+        #### Method
+            GET
+
+        #### Headers
+            {
+                "Content-Type": "application/json"
+            }
+
+        #### Payload
+
+        #### Return
+            {
+                "status_code": 200,
+                "message": "Success",
+                "result": True
+            }
+        """
     if request.method == 'GET':
-        response_dict = models.Student.list_student()
-        if response_dict is None:
-            response_dict = {}
+        student_list = models.Student.list_student()
+        print(":::", student_list, type(student_list))
+        response_dict = {}
+        if response_dict is None or len(student_list) == 0:
             response_dict["status_code"] = 200
             response_dict["message"] = "No Student Available"
             response_dict["result"] = False
+            response_dict["response"] = None
         else:
             response_dict['status_code'] = 200
+            response_dict["message"] = "Success"
             response_dict["result"] = True
-        log.v('list student response = ' + str(response_dict))
+            response_dict["response"] = student_list
+        log.d('list student response = ' + str(response_dict))
         return Response(response_dict, status=201)
 
 
@@ -40,8 +67,8 @@ def add_student(request):
     user_exist = models.Student.check_student(data.get('studentId', ''))
     log.error('UserCreation Status{}'.format(user_exist))
     if not user_exist:
-        user_data, is_created = models.Student.add_user(data)
-        response_dict['studentId'] = user_data.userId
+        user_data, is_created = models.Student.add_student(data)
+        response_dict['studentId'] = user_data.studentId
         response_dict['status_code'] = 200
         return Response(response_dict, status=201)
     else:
