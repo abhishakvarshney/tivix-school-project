@@ -49,40 +49,13 @@ class log:
         logger = logging.getLogger(settings.GENERAL_LOGGER)
         logger.warning(e)
 
-    '''
-    @classmethod
-    def e(cls, TAG, logText):
-        logger = logging.getLogger(settings.GENERAL_LOGGER)
-        if TAG not in cls.BLOCKED_LOG_TAGS:
-            logger.error('|E| ' + str(datetime.now()) + ' | ' + str(TAG) + '| ' + logText+ '|')
-    '''
 
     @classmethod
-    def v(cls, TAG, logText):
-        """
-
-        @param TAG:
-        @param logText:
-        @return:
-        """
-        return
-
-
-    @classmethod
-    def d(cls, TAG, logText):
+    def d(cls, logText):
         """
 
         @param TAG:
         @param logText:
         """
         logger = logging.getLogger(settings.GENERAL_LOGGER)
-        if TAG not in cls.BLOCKED_LOG_TAGS and cls.DEBUG_LOGS:
-            logger.debug('|D| ' + str(datetime.now()) + ' | ' + str(TAG) + '| ' + logText + '|')
-
-    '''
-    @classmethod
-    def critical(cls, TAG, logText):
-        logger = logging.getLogger(settings.GENERAL_LOGGER)
-        if TAG not in cls.BLOCKED_LOG_TAGS:
-            logger.critical('|C| ' + str(datetime.now()) + ' | ' + str(TAG) + '| ' +  logText+'|')
-            '''
+        logger.debug('|D| ' + str(datetime.now()) + ' | ' + '| ' + logText + '|')
