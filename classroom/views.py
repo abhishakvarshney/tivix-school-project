@@ -201,7 +201,7 @@ def teacher_delete_student(request):
             raise ArgumentMissingException("Missing studentId parameter")
         response_dict = {}
         try:
-            models.StudentTeacherMapping.delete_student(data.get('studnetId', ""))
+            models.StudentTeacherMapping.delete_student(data.get('studentId', ""))
             response_dict["status_code"] = 200
             response_dict["message"] = "Success"
             response_dict["result"] = True
@@ -209,5 +209,66 @@ def teacher_delete_student(request):
             log.exception(ex)
             response_dict["status_code"] = 200
             response_dict["message"] = "Student not linked with in Teacher Data"
+            response_dict["result"] = False
+        return response_dict
+
+
+@api_view(['POST'])
+@parser_classes([JSONParser, MultiPartParser, FormParser])
+def mark_student(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        if data.get('studentId', "") == "" or data.get('teacherId', "") == "":
+            raise ArgumentMissingException("Missing teacherId or studentId parameter")
+        response_dict = {}
+        teacher_id = models.StudentTeacherMapping.mark_student_by_teacher(data)
+        if teacher_id not in [None, '']:
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Success"
+            response_dict["result"] = True
+        else:
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Student not linked with in Teacher Data"
+            response_dict["result"] = False
+        return response_dict
+
+
+@api_view(['POST'])
+@parser_classes([JSONParser, MultiPartParser, FormParser])
+def unmark_student(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        if data.get('studentId', "") == "" or data.get('teacherId', "") == "":
+            raise ArgumentMissingException("Missing teacherId or studentId parameter")
+        response_dict = {}
+        teacher_id = models.StudentTeacherMapping.unmark_student_by_teacher(data)
+        if teacher_id not in [None, '']:
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Success"
+            response_dict["result"] = True
+        else:
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Student not linked with in Teacher Data"
+            response_dict["result"] = False
+        return response_dict
+
+
+@api_view(['POST'])
+@parser_classes([JSONParser, MultiPartParser, FormParser])
+def add_teacher_student(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        if data.get('studentId', "") == "" or data.get('teacherId', "") == "":
+            raise ArgumentMissingException("Missing teacherId or studentId parameter")
+        response_dict = {}
+        try:
+            models.StudentTeacherMapping.add_student_teacher(data)
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Success"
+            response_dict["result"] = True
+        except Exception as ex:
+            log.exception(ex)
+            response_dict["status_code"] = 200
+            response_dict["message"] = "Data Not available."
             response_dict["result"] = False
         return response_dict

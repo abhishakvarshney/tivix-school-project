@@ -3,14 +3,21 @@ from .views import *
 
 urlpatterns = [
     # Student related URLs
-    url(r'student/list', list_student),
-    url(r'student/add', add_student),
-    url(r'student/update', update_student),
-    url(r'student/delete', delete_student_account),
+    url(r'list/student/', list_student),
+    url(r'add/student/', add_student),
+    url(r'update/student/', update_student),
+    url(r'delete/student/', delete_student_account),
 
     # Teacher related URLs
-    url(r'teacher/list', list_teacher),
-    url(r'teacher/add', add_teacher),
-    url(r'teacher/update', update_teacher),
-    url(r'teacher/delete', delete_teacher_account),
+    url(r'list/teacher', list_teacher),
+    url(r'add/teacher', add_teacher),
+    url(r'update/teacher', update_teacher),
+    url(r'delete/teacher', delete_teacher_account),
+
+    # Teacher Student related URLs
+    url(r'remove/teacherFromStudentList', student_delete_teacher),
+    url(r'remove/studentFromTeacherList', teacher_delete_student),
+    url(r'mark/student', mark_student),
+    url(r'add/student/teacher', add_teacher_student),
+    url(r'unmark/student', unmark_student),
 ]

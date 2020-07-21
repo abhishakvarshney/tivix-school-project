@@ -71,7 +71,7 @@ class Student(models.Model):
         @param student_id:
         @return:
         """
-        userData = Student.objects.filter(studnetId__exact=student_id)
+        userData = Student.objects.filter(studentId__exact=student_id)
         if userData is None or len(userData) == 0:
             return None
         return userData[0]
@@ -85,7 +85,7 @@ class Student(models.Model):
         """
         user = Student.objects.get(studentId=data["studentId"])
         if user is None:
-            return
+            return None
 
         if data.get("firstName", "") != "":
             user.firstname = GU.encryptData(data["firstName"])
@@ -222,7 +222,7 @@ class StudentTeacherMapping(models.Model):
     studentId = models.ForeignKey(Student, on_delete=models.PROTECT, db_column="studentId")
     isStarMarked = models.BooleanField(default=False)
     isStudentActive = models.BooleanField(default=True)
-    isTeacherActive = models.BooleanField(default=True)
+
 
     @staticmethod
     def delete_student(student_id):
@@ -251,10 +251,35 @@ class StudentTeacherMapping(models.Model):
         @param data:
         @return:
         """
-        user = StudnetTeacher.objects.get(teacherId=data["teacherId"], studentId=data['studentId'])
+        user = StudentTeacher.objects.get(teacherId=data["teacherId"], studentId=data['studentId'])
         if user is None:
             return
 
         user.isStarMarked = 1
         user.save()
         return data["teacherId"]
+
+    @staticmethod
+    def unmark_student_by_teacher(data):
+        """
+
+        @param data:
+        @return:
+        """
+        user = StudentTeacher.objects.get(teacherId=data["teacherId"], studentId=data['studentId'])
+        if user is None:
+            return
+
+        user.isStarMarked = 0
+        user.save()
+        return data["teacherId"]
+
+    @staticmethod
+    def add_student_teacher(data):
+        """
+
+        @param student_id:
+        """
+        student = StudentTeacher.objects.get(studentId=data.get('studentId'), teacherId=data.get('teacherId'))
+        student.isStudentActive = 1
+        student.save()
