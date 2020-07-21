@@ -43,7 +43,6 @@ def list_student(request):
         """
     if request.method == 'GET':
         student_list = models.Student.list_student()
-        print(":::", student_list, type(student_list))
         response_dict = {}
         if response_dict is None or len(student_list) == 0:
             response_dict["status_code"] = 200
@@ -145,16 +144,19 @@ def student_delete_teacher(request):
 @parser_classes([JSONParser, MultiPartParser, FormParser])
 def list_teacher(request):
     if request.method == 'GET':
-        response_dict = models.Teacher.list_teacher()
-        if response_dict is None:
-            response_dict = {}
+        teacher_list = models.Teacher.list_teacher()
+        response_dict = {}
+        if response_dict is None or len(teacher_list) == 0:
             response_dict["status_code"] = 200
             response_dict["message"] = "No Teacher Available"
             response_dict["result"] = False
+            response_dict["response"] = None
         else:
             response_dict['status_code'] = 200
+            response_dict["message"] = "Success"
             response_dict["result"] = True
-        log.v('list teacher response = ' + str(response_dict))
+            response_dict["response"] = teacher_list
+        log.d('list teacher response = ' + str(response_dict))
         return Response(response_dict, status=201)
 
 
@@ -166,12 +168,12 @@ def add_teacher(request):
     user_exist = models.Teacher.check_teacher(data.get('teacherId', ''))
     log.error('UserCreation Status{}'.format(user_exist))
     if not user_exist:
-        user_data, is_created = models.Teacher.add_user(data)
-        response_dict['teacherId'] = user_data.userId
+        user_data, is_created = models.Teacher.add_teacher(data)
+        response_dict['teacherId'] = user_data.teacherId
         response_dict['status_code'] = 200
         return Response(response_dict, status=201)
     else:
-        return Response({"status_code": 200, "message": "User Already Exists. Please Login"}, status=201)
+        return Response({"status_code": 200, "message": "Teacher Already Exists. Please Login"}, status=201)
 
 
 @api_view(['POST'])

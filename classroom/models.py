@@ -51,7 +51,6 @@ class Student(models.Model):
         """
         response_dict = json.loads(serializers.serialize('json', Student.objects.all()))
         student_data_list = []
-        print(":::::", response_dict)
         for data in response_dict:
                 student_data = {}
                 student_data['studentId'] = data['pk']
@@ -128,7 +127,9 @@ class Student(models.Model):
 
 
 class Teacher(models.Model):
+
     """
+
     @return:
     """
 
@@ -144,9 +145,7 @@ class Teacher(models.Model):
     firstname = models.TextField(null=True, blank=True)
     lastname = models.TextField(null=True, blank=True)
     isActive = models.BooleanField(default=True)
-    gender = models.CharField(
-        max_length=20, choices=GENDER_CHOICES, default=GENDER_MALE
-    )
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default=GENDER_MALE)
     createdOn = models.DateTimeField(auto_now_add=True)
     updatedOn = models.DateTimeField(auto_now=True)
 
@@ -159,8 +158,16 @@ class Teacher(models.Model):
 
         @return:
         """
-        response_dict = Teacher.objects.all()
-        return response_dict
+        response_dict = json.loads(serializers.serialize('json', Teacher.objects.all()))
+        teacher_data_list = []
+        for data in response_dict:
+                teacher_data = {}
+                teacher_data['teacherId'] = data['pk']
+                teacher_data['firstName'] = GU.decryptData(data['fields']['firstname'])
+                teacher_data['lastName'] = GU.decryptData(data['fields']['lastname'])
+                teacher_data['gender'] = data['fields']['gender']
+                teacher_data_list.append(teacher_data)
+        return teacher_data_list
 
     @staticmethod
     def check_teacher(teacher_id):
@@ -181,14 +188,17 @@ class Teacher(models.Model):
         @param data:
         @return:
         """
-        userData = {}
-        userData["firstname"] = GU.encryptData(data.get("firstName", ""))
-        userData["lastname"] = GU.encryptData(data.get("lastName", ""))
-        userData['password'] = GU.encryptData(data.get("password", ""))
-        userData["gender"] = data.get("gender", "")
-        userData["isActive"] = True
-        obj = Teacher.objects.create(userData)
-        return obj, True
+        user = Teacher()
+        user.teacherId = data.get("teacherId", "")
+        user.firstname = GU.encryptData(data.get("firstName", ""))
+        user.lastname = GU.encryptData(data.get("lastName", ""))
+        user.password = GU.encryptData(data.get("password", ""))
+        user.gender = data.get("gender", "")
+        user.isActive = True
+        if Teacher.check_teacher(data.get('teacherId')) is None:
+            user.save()
+            return user, True
+        return user, False
 
     @staticmethod
     def update_teacher(data):
