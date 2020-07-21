@@ -71,7 +71,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'school.wsgi.application'
 
-MYSQL_HOSTNAME = os.getenv('MYSQL_HOSTNAME', 'localhost')
+MYSQL_HOSTNAME = os.getenv('MYSQL_HOSTNAME', 'mysql')
 MYSQL_DBNAME = os.getenv('MYSQL_DBNAME', 'platform_school')
 MYSQL_USER = os.getenv('MYSQL_USER', 'platform_admin')
 MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', 'pb_dev_env')
@@ -80,7 +80,7 @@ MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', 'pb_dev_env')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django_prometheus.db.backends.mysql',
+        'ENGINE': 'django.db.backends.mysql',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'NAME': MYSQL_DBNAME,
         'USER': MYSQL_USER,

@@ -12,4 +12,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 EXPOSE 8000
+CMD 'ls'
 CMD ["python" , "-u" , "manage.py", "runserver", "0:8000"]

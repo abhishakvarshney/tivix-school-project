@@ -20,7 +20,7 @@ services:
     - USER=platform_admin
     - PASSWORD=pb_dev_env
     volumes:
-    - ./school:/usr/src/app
+    - .:/usr/src/app
     ports:
     - 8888:8000
     links:

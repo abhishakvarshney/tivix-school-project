@@ -32,12 +32,12 @@ class Student(models.Model):
         """
         db_table = "student"
 
-    studentId = models.CharField(max_length=255, primary_key=True)
+    studentId = models.CharField(max_length=255, primary_key=True, null=False, blank=False)
     password = models.CharField(max_length=45, null=False, blank=False)
     firstname = models.TextField(null=True, blank=True)
     lastname = models.TextField(null=True, blank=True)
     isActive = models.BooleanField(default=True)
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default=GENDER_MALE)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default="Male", null=False, blank=False)
     createdOn = models.DateTimeField(auto_now_add=True)
     updatedOn = models.DateTimeField(auto_now=True)
 
@@ -51,10 +51,10 @@ class Student(models.Model):
         """
         response_dict = json.loads(serializers.serialize('json', Student.objects.all()))
         student_data_list = []
-        print(response_dict)
+        print(":::::", response_dict)
         for data in response_dict:
                 student_data = {}
-                student_data['studentId'] = data['fields']['studentId']
+                student_data['studentId'] = data['pk']
                 student_data['firstName'] = GU.decryptData(data['fields']['firstname'])
                 student_data['lastName'] = GU.decryptData(data['fields']['lastname'])
                 student_data['gender'] = data['fields']['gender']
@@ -75,6 +75,7 @@ class Student(models.Model):
         user.password = GU.encryptData(data.get("password", ""))
         user.gender = data.get("gender", "")
         user.isActive = True
+        log.info('::::::'+user.studentId+";;;;;"+ data.get("studentId", ""))
         if Student.check_student(data.get('studentId')) is None:
             user.save()
             return user, True
