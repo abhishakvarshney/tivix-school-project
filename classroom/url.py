@@ -18,6 +18,6 @@ urlpatterns = [
     url(r'remove/teacherFromStudentList', student_delete_teacher),
     url(r'remove/studentFromTeacherList', teacher_delete_student),
     url(r'mark/student', mark_student),
-    url(r'add/student/teacher', add_teacher_student),
-    url(r'unmark/student', unmark_student),
+    url(r'add/studentTeacher', add_teacher_student),
+    url(r'unmarking/student', unmark_student),
 ]

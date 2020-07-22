@@ -32,12 +32,12 @@ class Student(models.Model):
         """
         db_table = "student"
 
-    studentId = models.CharField(max_length=255, primary_key=True, null=False, blank=False)
-    password = models.CharField(max_length=45, null=False, blank=False)
+    studentId = models.CharField(max_length=255, primary_key=True)
+    password = models.CharField(max_length=45)
     firstname = models.TextField(null=True, blank=True)
     lastname = models.TextField(null=True, blank=True)
     isActive = models.BooleanField(default=True)
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default="Male", null=False, blank=False)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default="Male")
     createdOn = models.DateTimeField(auto_now_add=True)
     updatedOn = models.DateTimeField(auto_now=True)
 
@@ -49,14 +49,13 @@ class Student(models.Model):
         """
         @return:
         """
-        response_dict = json.loads(serializers.serialize('json', Student.objects.all()))
+        response_dict = json.loads(serializers.serialize('json', Student.objects.filter(isActive=True)))
         student_data_list = []
         for data in response_dict:
                 student_data = {}
                 student_data['studentId'] = data['pk']
-                student_data['firstName'] = GU.decryptData(data['fields']['firstname'])
-                student_data['lastName'] = GU.decryptData(data['fields']['lastname'])
-                student_data['gender'] = data['fields']['gender']
+                student_data['firstname'] = GU.decryptData(data['fields']['firstname'])
+                student_data['lastname'] = GU.decryptData(data['fields']['lastname'])
                 student_data_list.append(student_data)
         return student_data_list
 
@@ -69,12 +68,11 @@ class Student(models.Model):
         """
         user = Student()
         user.studentId = data.get("studentId", "")
-        user.firstname = GU.encryptData(data.get("firstName", ""))
-        user.lastname = GU.encryptData(data.get("lastName", ""))
+        user.firstname = GU.encryptData(data.get("firstname", ""))
+        user.lastname = GU.encryptData(data.get("lastname", ""))
         user.password = GU.encryptData(data.get("password", ""))
         user.gender = data.get("gender", "")
         user.isActive = True
-        log.info('::::::'+user.studentId+";;;;;"+ data.get("studentId", ""))
         if Student.check_student(data.get('studentId')) is None:
             user.save()
             return user, True
@@ -87,7 +85,7 @@ class Student(models.Model):
         @param student_id:
         @return:
         """
-        userData = Student.objects.filter(studentId__exact=student_id)
+        userData = json.loads(serializers.serialize('json', Student.objects.filter(studentId__exact=student_id)))
         if userData is None or len(userData) == 0:
             return None
         return userData[0]
@@ -103,15 +101,15 @@ class Student(models.Model):
         if user is None:
             return None
 
-        if data.get("firstName", "") != "":
-            user.firstname = GU.encryptData(data["firstName"])
-        if data.get("lastName", "") != "":
-            user.lastname = GU.encryptData(data["lastName"])
+        if data.get("firstname", "") != "":
+            user.firstname = GU.encryptData(data["firstname"])
+        if data.get("lastname", "") != "":
+            user.lastname = GU.encryptData(data["lastname"])
         if data.get("gender", "") != "":
             user.gender = data["gender"]
         if data.get("password", "") != "":
             user.password = GU.encryptData(data["password"])
-
+        user.isActive = True
         user.save()
         return data["studentId"]
 
@@ -140,12 +138,12 @@ class Teacher(models.Model):
 
         db_table = "teacher"
 
-    teacherId = models.CharField(max_length=255, primary_key=True, editable=False)
-    password = models.CharField(max_length=45, null=False, blank=False)
+    teacherId = models.CharField(max_length=255, primary_key=True)
+    password = models.CharField(max_length=45)
     firstname = models.TextField(null=True, blank=True)
     lastname = models.TextField(null=True, blank=True)
     isActive = models.BooleanField(default=True)
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default=GENDER_MALE)
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='Male')
     createdOn = models.DateTimeField(auto_now_add=True)
     updatedOn = models.DateTimeField(auto_now=True)
 
@@ -158,14 +156,13 @@ class Teacher(models.Model):
 
         @return:
         """
-        response_dict = json.loads(serializers.serialize('json', Teacher.objects.all()))
+        response_dict = json.loads(serializers.serialize('json', Teacher.objects.filter(isActive=True)))
         teacher_data_list = []
         for data in response_dict:
                 teacher_data = {}
                 teacher_data['teacherId'] = data['pk']
-                teacher_data['firstName'] = GU.decryptData(data['fields']['firstname'])
-                teacher_data['lastName'] = GU.decryptData(data['fields']['lastname'])
-                teacher_data['gender'] = data['fields']['gender']
+                teacher_data['firstname'] = GU.decryptData(data['fields']['firstname'])
+                teacher_data['lastname'] = GU.decryptData(data['fields']['lastname'])
                 teacher_data_list.append(teacher_data)
         return teacher_data_list
 
@@ -190,8 +187,8 @@ class Teacher(models.Model):
         """
         user = Teacher()
         user.teacherId = data.get("teacherId", "")
-        user.firstname = GU.encryptData(data.get("firstName", ""))
-        user.lastname = GU.encryptData(data.get("lastName", ""))
+        user.firstname = GU.encryptData(data.get("firstname", ""))
+        user.lastname = GU.encryptData(data.get("lastname", ""))
         user.password = GU.encryptData(data.get("password", ""))
         user.gender = data.get("gender", "")
         user.isActive = True
@@ -211,13 +208,13 @@ class Teacher(models.Model):
         if user is None:
             return
 
-        if data.get("firstName", "") != "":
-            user.firstname = GU.encryptData(data["firstName"])
-        if data.get("lastName", "") != "":
-            user.lastname = GU.encryptData(data["lastName"])
+        if data.get("firstname", "") != "":
+            user.firstname = GU.encryptData(data["firstname"])
+        if data.get("lastname", "") != "":
+            user.lastname = GU.encryptData(data["lastname"])
         if data.get("gender", "") != "":
             user.gender = data["gender"]
-
+        user.isActive = True
         user.save()
         return data["teacherId"]
 
@@ -245,10 +242,11 @@ class StudentTeacherMapping(models.Model):
         db_table = "student_teacher"
 
     mapId = models.CharField(max_length=255, primary_key=True, default=uuid.uuid4, editable=False)
-    teacherId = models.ForeignKey(Teacher, on_delete=models.PROTECT, db_column="teacherId")
-    studentId = models.ForeignKey(Student, on_delete=models.PROTECT, db_column="studentId")
+    teacherId = models.CharField(max_length=255)
+    studentId = models.CharField(max_length=255)
     isStarMarked = models.BooleanField(default=False)
-    isStudentActive = models.BooleanField(default=True)
+    isStudentActive = models.BooleanField(default=False)
+    isTeacherActive = models.BooleanField(default=False)
 
 
     @staticmethod
@@ -257,7 +255,7 @@ class StudentTeacherMapping(models.Model):
 
         @param student_id:
         """
-        student = StudentTeacher.objects.get(studentId=student_id)
+        student = StudentTeacherMapping.objects.get(studentId=student_id)
         student.isStudentActive = 0
         student.save()
 
@@ -267,7 +265,7 @@ class StudentTeacherMapping(models.Model):
 
         @param student_id:
         """
-        teacher = StudentTeacher.objects.get(teacherId=teacher_id)
+        teacher = StudentTeacherMapping.objects.get(teacherId=teacher_id)
         teacher.isTeacherActive = 0
         teacher.save()
 
@@ -278,7 +276,7 @@ class StudentTeacherMapping(models.Model):
         @param data:
         @return:
         """
-        user = StudentTeacher.objects.get(teacherId=data["teacherId"], studentId=data['studentId'])
+        user = StudentTeacherMapping.objects.get(teacherId=data["teacherId"], studentId=data['studentId'])
         if user is None:
             return
 
@@ -293,7 +291,7 @@ class StudentTeacherMapping(models.Model):
         @param data:
         @return:
         """
-        user = StudentTeacher.objects.get(teacherId=data["teacherId"], studentId=data['studentId'])
+        user = StudentTeacherMapping.objects.get(teacherId=data["teacherId"], studentId=data['studentId'])
         if user is None:
             return
 
@@ -307,6 +305,11 @@ class StudentTeacherMapping(models.Model):
 
         @param student_id:
         """
-        student = StudentTeacher.objects.get(studentId=data.get('studentId'), teacherId=data.get('teacherId'))
+        try:
+            student = StudentTeacherMapping.objects.get(studentId=data.get('studentId'), teacherId=data.get('teacherId'))
+        except Exception:
+            student = StudentTeacherMapping()
+            student.teacherId = data.get('teacherId')
+            student.studentId = data.get('studentId')
         student.isStudentActive = 1
         student.save()
