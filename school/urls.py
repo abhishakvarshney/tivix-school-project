@@ -19,10 +19,14 @@ from django.urls import path
 from django.conf import settings
 from django.views.static import serve
 from .views import ping
+from graphene_django.views import GraphQLView
+from school.schema import schema
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('monitor/ping',ping),
+    url(r'^graphql$', GraphQLView.as_view(graphiql=True, schema=schema)),
     path('', include('classroom.url')),
     url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
 ]

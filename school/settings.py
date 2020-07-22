@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'graphene_django',
     'classroom',
 ]
 
@@ -70,6 +71,11 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'school.wsgi.application'
+
+GRAPHENE = {
+    'SCHEMA': 'school.schema.schema'
+}
+
 
 MYSQL_HOSTNAME = os.getenv('MYSQL_HOSTNAME', 'mysql')
 MYSQL_DBNAME = os.getenv('MYSQL_DBNAME', 'platform_school')
