@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from utility.log import log
 from utility.Exceptions import *
 from utility.utils import GeneralUtils as GU
+from .validator import *
 
 
 # Create your views here.
@@ -63,8 +64,10 @@ def list_student(request):
 def add_student(request):
     data = json.loads(request.body.decode("utf-8"))
     response_dict = {}
-    if data.get("studentId", "") == "" or data.get("password", "") == "":
-        raise ArgumentMissingException("Missing StudentID/Password parameter")
+    validate_request, error_msg = validate_add_student(request)
+    if not validate_request:
+        log.error(error_msg)
+        return JsonResponse(error_msg)
     user_exist = models.Student.check_student(data.get("studentId", ""))
     log.error("UserCreation Status{}".format(user_exist))
     if not user_exist:
@@ -84,8 +87,10 @@ def add_student(request):
 def update_student(request):
     if request.method == "PUT":
         data = json.loads(request.body)
-        if data.get("studentId", "") == "":
-            raise ArgumentMissingException("Missing StudentID parameter")
+        validate_request, error_msg = validate_update_student(request)
+        if not validate_request:
+            log.error(error_msg)
+            return JsonResponse(error_msg)
 
         if (
             data.get("firstName", "") == ""
@@ -117,8 +122,10 @@ def update_student(request):
 def delete_student_account(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        if data.get("studentId", "") == "":
-            raise ArgumentMissingException("Missing studentId parameter")
+        validate_request, error_msg = validate_delete_student_account(request)
+        if not validate_request:
+            log.error(error_msg)
+            return JsonResponse(error_msg)
         response_dict = {}
         try:
             models.Student.delete_student(data.get("studentId", ""))
@@ -138,8 +145,10 @@ def delete_student_account(request):
 def student_delete_teacher(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        if data.get("teacherId", "") == "":
-            raise ArgumentMissingException("Missing TeacherId parameter")
+        validate_request, error_msg = validate_student_delete_teacher(request)
+        if not validate_request:
+            log.error(error_msg)
+            return JsonResponse(error_msg)
         response_dict = {}
         try:
             models.StudentTeacherMapping.delete_teacher(data.get("teacherId", ""))
@@ -179,6 +188,10 @@ def list_teacher(request):
 def add_teacher(request):
     data = json.loads(request.body.decode("utf-8"))
     response_dict = {}
+    validate_request, error_msg = validate_add_teacher(request)
+    if not validate_request:
+        log.error(error_msg)
+        return JsonResponse(error_msg)
     user_exist = models.Teacher.check_teacher(data.get("teacherId", ""))
     log.error("UserCreation Status{}".format(user_exist))
     if not user_exist:
@@ -198,9 +211,10 @@ def add_teacher(request):
 def update_teacher(request):
     if request.method == "PUT":
         data = json.loads(request.body)
-        if data.get("teacherId", "") == "":
-            raise ArgumentMissingException("Missing teacherID parameter")
-
+        validate_request, error_msg = validate_update_teacher(request)
+        if not validate_request:
+            log.error(error_msg)
+            return JsonResponse(error_msg)
         if (
             data.get("firstName", "") == ""
             and data.get("lastName", "") == ""
@@ -231,8 +245,10 @@ def update_teacher(request):
 def delete_teacher_account(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        if data.get("teacherId", "") == "":
-            raise ArgumentMissingException("Missing teacherId parameter")
+        validate_request, error_msg = validate_delete_teacher_account(request)
+        if not validate_request:
+            log.error(error_msg)
+            return JsonResponse(error_msg)
         response_dict = {}
         try:
             models.Teacher.delete_teacher(data.get("teacherId", ""))
@@ -252,8 +268,10 @@ def delete_teacher_account(request):
 def teacher_delete_student(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        if data.get("studentId", "") == "":
-            raise ArgumentMissingException("Missing studentId parameter")
+        validate_request, error_msg = validate_teacher_delete_student(request)
+        if not validate_request:
+            log.error(error_msg)
+            return JsonResponse(error_msg)
         response_dict = {}
         try:
             models.StudentTeacherMapping.delete_student(data.get("studentId", ""))
@@ -273,8 +291,10 @@ def teacher_delete_student(request):
 def mark_student(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        if data.get("studentId", "") == "" or data.get("teacherId", "") == "":
-            raise ArgumentMissingException("Missing teacherId or studentId parameter")
+        validate_request, error_msg = validate_mark_student(request)
+        if not validate_request:
+            log.error(error_msg)
+            return JsonResponse(error_msg)
         response_dict = {}
         if None not in [
             models.Student.check_student(data.get("studentId", "")),
@@ -302,8 +322,10 @@ def mark_student(request):
 def unmark_student(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        if data.get("studentId", "") == "" or data.get("teacherId", "") == "":
-            raise ArgumentMissingException("Missing teacherId or studentId parameter")
+        validate_request, error_msg = validate_mark_student(request)
+        if not validate_request:
+            log.error(error_msg)
+            return JsonResponse(error_msg)
         response_dict = {}
         try:
             teacher_id = models.StudentTeacherMapping.unmark_student_by_teacher(data)
@@ -328,8 +350,10 @@ def unmark_student(request):
 def add_teacher_student(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        if data.get("studentId", "") == "" or data.get("teacherId", "") == "":
-            raise ArgumentMissingException("Missing teacherId or studentId parameter")
+        validate_request, error_msg = validate_mark_student(request)
+        if not validate_request:
+            log.error(error_msg)
+            return JsonResponse(error_msg)
         response_dict = {}
         if None not in [
             models.Student.check_student(data.get("studentId", "")),
