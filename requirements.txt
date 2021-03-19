@@ -2,7 +2,7 @@ black==19.10b0
 colorlog==4.1.0
 Django==3.0.8
 django-rest-framework==0.1.0
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 pycrypto==2.6.1
 mysqlclient
 graphene_django
